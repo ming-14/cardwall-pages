@@ -59,7 +59,7 @@
                                             {loading...}
                                         </div>
 
-                                        <a href="index.html" style="color:#5D5D5D">我不知道，回首页<a>
+                                        <a href="index.html" id="goBack" style="color:#5D5D5D">我不知道，回首页<a>
                                                 <button id="embed-submit" type="submit" value="提交"
                                                     class="foot-right btn btn-danger"
                                                     onclick="sendDataFromInputs()">验证</button>
@@ -156,6 +156,7 @@
     });
 </script>
 <script>
+    var successHref = "writeCard.html?notifications=1&notifications_content=身份验证成功，可以开始写表白卡了";
     // 发送验证数据
     function sendDataFromInputs() {
         makeloading();
@@ -181,7 +182,7 @@
                         // 设置cookie
                         var cookieData = JSON.stringify(data);
                         document.cookie = "authentication_answer=" + escape(cookieData);
-                        window.location = "writeCard.html?notifications=1&notifications_content=身份验证成功，可以开始写表白卡了";
+                        window.location = successHref;
                     } else {
                         scrollMove();
                         maketip(MAKETIP_WARNING, "答案错误，请重新填写");
@@ -199,5 +200,12 @@
     }
 
 </script>
-
+<script>
+$(document).ready(function () {
+    if(getQueryVariable("__from__")){
+        document.getElementById("goBack").href = getQueryVariable("__from__");
+        successHref = getQueryVariable("__from__"+"?__value__="+getQueryVariable("__value__"));
+    }
+});
+</script>
 </html>
