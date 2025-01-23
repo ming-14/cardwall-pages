@@ -33,8 +33,8 @@ function AddLoveLetter( id, sponsor, lover, type, tosay )
     var foot_right = document.createElement( "span" );
     foot_right.className = "foot-right";
     var badge = document.createElement( "span" );
-    badge.className = ( sponsor != false && sponsor != "" ) ? "badge badge-danger" : "badge badge-light";
-    badge.innerHTML = ( ( sponsor != false && sponsor != "" ) ? htmlEscape( sponsor ) : "匿名" );
+    badge.className = ( isEmpty(sponsor) ) ? "badge badge-danger" : "badge badge-light";
+    badge.innerHTML = ( ( isEmpty(sponsor) ) ? htmlEscape( sponsor ) : "匿名" );
     foot_right.appendChild( badge );
     card_title.appendChild( foot_right );
 

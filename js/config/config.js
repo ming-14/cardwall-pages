@@ -1,1 +1,1 @@
-var api_url = "https://cardwall-api.glitch.me";
+var api_url = "";
