@@ -181,7 +181,7 @@
                     if (response.data) {
                         // 设置cookie
                         var cookieData = JSON.stringify(data);
-                        document.cookie = "authentication_answer=" + escape(cookieData) + ";path=/";
+                        document.cookie = "authentication_answer=" + encodeURIComponent(cookieData) + ";path=/";
                         window.location = successHref;
                     } else {
                         scrollMove();
