@@ -204,7 +204,7 @@
 $(document).ready(function () {
     if(getQueryVariable("__from__")){
         document.getElementById("goBack").href = decodeURIComponent(getQueryVariable("__from__"));
-        successHref = decodeURI(getQueryVariable("__from__"+"?__value__="+getQueryVariable("__value__")));
+        successHref = decodeURI(getQueryVariable("__from__")+"?__value__="+getQueryVariable("__value__"));
     }
 });
 </script>
