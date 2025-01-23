@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width">
+    <meta name="referrer" content="no-referrer" />
+
+    <title>盆友圈 表白墙</title>
+
+    <!-- build:css -->
+    <link href="./library/app/app.min.css" rel="stylesheet" type="text/css" />
+    <!-- endbuild -->
+
+    <!-- css -->
+    <link href="./css/main.css" rel="stylesheet" type="text/css">
+    <!-- css -->
+</head>
+
+<body>
+    <!-- 侧栏 -->
+    <div class="wrapper">
+
+        <!-- 侧栏 -->
+
+        <!-- ============================================================== -->
+        <!-- 主界面 Start -->
+        <!-- ============================================================== -->
+
+        <div class="content">
+
+            <div class="container-fluid">
+                <!-- 头部引入页面-->
+
+                <br>
+                <!-- Start Content-->
+                <div id="alert"></div>
+                <!-- End content -->
+
+                <div class="account-pages mt-5 mb-5">
+                    <div class="container">
+                        <div class="row justify-content-center">
+                            <div class="col-lg-6">
+                                <div class="card">
+                                    <!-- Logo -->
+                                    <div class="btn btn-block btn-danger">
+                                        <h1 style="font-size:20px" id="paper-Title">{loading...}</h1>
+                                    </div>
+
+                                    <div class="card-body p-4">
+                                        <div class="text-center w-75 m-auto">
+                                            <h4 class="text-dark-50 text-center mt-3 font-weight-bold"
+                                                id="paper-subTitle">
+                                                {loading...}
+                                            </h4>
+                                        </div>
+
+                                        <div class="form-group mb-3" id="paper">
+                                            {loading...}
+                                        </div>
+
+                                        <a href="index.html" style="color:#5D5D5D">我不知道，回首页<a>
+                                                <button id="embed-submit" type="submit" value="提交"
+                                                    class="foot-right btn btn-danger"
+                                                    onclick="sendDataFromInputs()">验证</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 页脚 Start -->
+        <footer class="footer" style="left:0;">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-md-6" style="max-width:100%;">Copyright © 2021-2025 Rikka</div>
+                    <div class="col-md-6" style="margin-left:auto;">
+                        <div class="text-md-right footer-links d-none d-sm-block" style="float:right;">
+                            <!-- 这里a标签用的不是main.css那个 -->
+                            <a href="https://ming-14.github.io/" style="left:0;">Rikka's 小屋</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </footer>
+        <!-- 页脚 End -->
+
+        <!-- ============================================================== -->
+        <!-- 主界面 End -->
+        <!-- ============================================================== -->
+
+    </div>
+
+
+</body>
+
+<link href="./css/loading.css" rel="stylesheet" type="text/css">
+<script src="./js/loading.js"></script>
+<script>makeloading();</script>
+<!-- Jquery-->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="./js/config/config.js"></script>
+<script src="./js/cookie.js"></script>
+<script src="./js/moveDivl.js"></script>
+<script src="./js/main.js"></script>
+<script>
+    if (!check()) {
+        maketip(2, "请注意，您的浏览器不支持Cookie，身份验证可能会失败");
+    }
+</script>
+<script>
+    // 展示验证题目
+    $(document).ready(function () {
+        $.ajax({
+            url: api_url + "/api/get-paper",
+            type: "GET",
+            dataType: "json",
+            success: function (data) {
+                let paperContent = '';
+                for (const subject in data) {
+                    if (data.hasOwnProperty(subject)) {
+                        paperContent += `<br>
+                                        <label>${data[subject].question}</label>
+                                        <input type="text" class="form-control" id="question-${subject}" placeholder="" />
+                                        <br>`;
+                    }
+                }
+                $('#paper').html(paperContent);
+            },
+            error: function (xhr, status, error) {
+                console.error("题目请求失败: ", status, error);
+                maketip(MAKETIP_WARNING, "题目请求失败");
+            }
+        });
+    });
+
+    // 展示标题
+    $(document).ready(function () {
+        $.ajax({
+            url: api_url + "/api/get-paperTitle",
+            type: "GET",
+            dataType: "json",
+            success: function (data) {
+                removeloading();
+                $('#paper-Title').html(data.mainTitle);
+                $('#paper-subTitle').html(data.subTitle);
+            },
+            error: function (xhr, status, error) {
+                removeloading();
+                console.error("主标题请求失败: ", status, error);
+            }
+        });
+    });
+</script>
+<script>
+    // 发送验证数据
+    function sendDataFromInputs() {
+        makeloading();
+        // 获取所有id以"paper-"开头的input元素
+        var inputs = document.querySelectorAll('div#paper input[id^="question-"]');
+        var data = {};
+
+        // 遍历这些input元素，获取其id和value，并整合到data对象中
+        inputs.forEach(function (input) {
+            var id = input.id.slice(9); // 去除前缀
+            data[id] = input.value; // 整合id和value
+        });
+
+        $.ajax({
+            url: api_url + "/api/check",
+            data: JSON.stringify(data),
+            type: "POST",
+            contentType: "application/json", // 设置请求头，指定发送的数据格式为JSON
+            success: function (response, status) {
+                removeloading();
+                if (response.code === 200) {
+                    if (response.data) {
+                        // 设置cookie
+                        var cookieData = JSON.stringify(data);
+                        document.cookie = "authentication_answer=" + escape(cookieData);
+                        window.location = "writeCard.html?notifications=1&notifications_content=身份验证成功，可以开始写表白卡了";
+                    } else {
+                        scrollMove();
+                        maketip(MAKETIP_WARNING, "答案错误，请重新填写");
+                    }
+                } else {
+                    maketip(MAKETIP_WARNING, "连接服务器失败");
+                }
+            },
+            error: function (err) {
+                removeloading();
+                scrollMove();
+                maketip(MAKETIP_WARNING, "连接服务器失败");
+            }
+        });
+    }
+
+</script>
+
+</html>
