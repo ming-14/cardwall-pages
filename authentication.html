@@ -203,8 +203,8 @@
 <script>
 $(document).ready(function () {
     if(getQueryVariable("__from__")){
-        document.getElementById("goBack").href = getQueryVariable("__from__");
-        successHref = getQueryVariable("__from__"+"?__value__="+getQueryVariable("__value__"));
+        document.getElementById("goBack").href = decodeURIComponent(getQueryVariable("__from__"));
+        successHref = decodeURI(getQueryVariable("__from__"+"?__value__="+getQueryVariable("__value__")));
     }
 });
 </script>
